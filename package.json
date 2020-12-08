@@ -1,0 +1,35 @@
+{
+   "name": "mobilidade",
+   "version": "0.0.1",
+   "description": "Projeto de mobilidade nossoCarro",
+   "devDependencies": {
+      "@types/bcryptjs": "^2.4.2",
+      "@types/express": "^4.17.8",
+      "@types/fs-promise": "^2.0.0",
+      "@types/jsonwebtoken": "^8.5.0",
+      "@types/multer": "^1.4.4",
+      "@types/node": "^8.0.29",
+      "@types/yup": "^0.29.8",
+      "ts-node": "3.3.0",
+      "ts-node-dev": "^1.0.0-pre.62",
+      "typescript": "3.3.3333"
+   },
+   "dependencies": {
+      "bcryptjs": "^2.4.3",
+      "body-parser": "^1.18.1",
+      "dotenv": "^8.2.0",
+      "express": "^4.15.4",
+      "express-async-errors": "^3.1.1",
+      "jsonwebtoken": "^8.5.1",
+      "multer": "^1.4.2",
+      "pg": "^7.3.0",
+      "reflect-metadata": "^0.1.10",
+      "typeorm": "0.2.25",
+      "uuidv4": "^6.2.3",
+      "yup": "^0.29.3"
+   },
+   "scripts": {
+      "start": "ts-node src/index.ts",
+      "dev:server": "ts-node-dev --ignore-watch node_modules src/index.ts"
+   }
+}
