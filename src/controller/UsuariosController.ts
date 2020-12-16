@@ -5,6 +5,7 @@ import UsuarioServiceCriar from "../services/UsuarioServiceCriar";
 import UsuarioServiceAtualizar from "../services/UsuarioServiceAtualizar";
 import UsuarioServiceExcluir from "../services/UsuarioServiceExcluir";
 import UsuarioServiceAtualizarLocalizacao from "../services/UsuarioServiceAtualizarLocalizacao";
+import UsuarioServiceResetSenha from "../services/UsuarioServiceResetSenha";
 
 import UsuariosView from '../view/Usuarios';
 
@@ -70,6 +71,15 @@ export default class UsuariosController {
     const service = new UsuarioServiceExcluir()
     await service.execute({id})
     return response.status(204).json()
+  }
+
+  async senhaReset(request: Request, response: Response): Promise<Response> {
+
+    const { email } = request.body
+    const service = new UsuarioServiceResetSenha()
+    await service.execute({ email })
+
+    return response.status(200).json();
   }
 }
 

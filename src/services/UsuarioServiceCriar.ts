@@ -51,6 +51,7 @@ class UsuarioServiceCriar {
       tipo,
       celular,
       senha: senhaCriptografada,
+      senha_temporaria: '',
       cpf,
       rg,
       avatar_url

@@ -30,7 +30,15 @@ class SecaoServiceCriar {
     const isSenhaValida = await compare(senha, registro.senha)
 
     if(!isSenhaValida) {
-      throw new TratamentoDeErros('Combinação de e-mail e senha não foram encontrados!', 401)
+      if(registro.senha_temporaria) {
+
+        const isSenhaTemporariaValida = await compare(senha, registro.senha_temporaria)
+        if(!isSenhaTemporariaValida) {
+          throw new TratamentoDeErros('Combinação de e-mail e senha temporária não foram encontrados!', 401)
+        }
+      } else {
+        throw new TratamentoDeErros('Combinação de e-mail e senha não foram encontrados!', 401)
+      }
     }
 
     const jwt = sign({

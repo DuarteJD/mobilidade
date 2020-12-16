@@ -29,6 +29,9 @@ export class Usuarios {
   senha: string;
 
   @Column({ nullable: true, default: null })
+  senha_temporaria: string;
+
+  @Column({ nullable: true, default: null })
   cpf: string;
 
   @Column({ nullable: true, default: null })

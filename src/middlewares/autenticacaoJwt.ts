@@ -11,8 +11,6 @@ interface tokenJTW {
 
 export default function autenticacaoJwt(request: Request, response: Response, next: NextFunction): void {
 
-  console.log(request.url);
-
   const token = request.headers.authorization;
 
   if(!token) {

@@ -50,6 +50,7 @@ class UsuarioServiceAtualizar {
       email,
       tipo,
       celular,
+      senha_temporaria:null,
       cpf,
       rg,
       avatar_url
