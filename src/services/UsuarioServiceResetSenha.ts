@@ -3,9 +3,21 @@ import UsuariosRepository from "../repositories/UsuariosRepository";
 import { hash } from 'bcryptjs';
 
 import TratamentoDeErros  from "../errors/TratamentoDeErros";
+import EthrealMailProvider from '../providers/EthrealMailProvider';
 
 interface Request {
   email: string;
+}
+
+interface IMailContact {
+  name: string;
+  email: string;
+}
+
+interface IMailSendDTO {
+  to: IMailContact;
+  from?: IMailContact;
+  subject: string;
 }
 
 class UsuarioServiceResetSenha {
@@ -22,7 +34,6 @@ class UsuarioServiceResetSenha {
     }
 
     const senha_temporaria = Math.random().toString(36).substring(7);
-    console.log(senha_temporaria);
     const senhaCriptografada = await hash(senha_temporaria, 8);
 
     const linha = await repository.update(encontrarID.id, {
@@ -32,6 +43,20 @@ class UsuarioServiceResetSenha {
     if(!linha.affected) {
       throw new TratamentoDeErros('Nenhum registro foi alterado!', 400)
     }
+
+    const emailTo : IMailSendDTO =
+    {
+      to:
+      {
+        name: encontrarID.apelido,
+        email: encontrarID.email
+      },
+      subject: `Recuperação de senha ${senha_temporaria}`
+    }
+
+    const mailProvider = new EthrealMailProvider();
+    await mailProvider.sendMail(emailTo);
+
   }
 }
 export default UsuarioServiceResetSenha;
