@@ -11,6 +11,7 @@ interface IMailSendDTO {
   to: IMailContact;
   from?: IMailContact;
   subject: string;
+  body: string;
 }
 
 export default class EtherealMailProvider {
@@ -34,6 +35,7 @@ export default class EtherealMailProvider {
     from,
     to,
     subject,
+    body
   }: IMailSendDTO): Promise<void> {
     const message = await this.client.sendMail({
       from: {
@@ -45,12 +47,10 @@ export default class EtherealMailProvider {
         address: to.email,
       },
       subject,
-      text:'Requisição de senha'
-      //html: await this.mailTemplateProvider.parse(templateData),
+      html: body,
     });
 
     console.log('Message sent: %s', message.messageId);
-    // Preview only available when sending through an Ethereal account
     console.log('Preview URL: %s', nodemailer.getTestMessageUrl(message));
   }
 }

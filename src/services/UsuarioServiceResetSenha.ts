@@ -1,6 +1,9 @@
 import { getCustomRepository } from "typeorm";
 import UsuariosRepository from "../repositories/UsuariosRepository";
 import { hash } from 'bcryptjs';
+import * as Handlebars  from "handlebars";
+import * as fs from 'fs';
+import * as path from 'path';
 
 import TratamentoDeErros  from "../errors/TratamentoDeErros";
 import EthrealMailProvider from '../providers/EthrealMailProvider';
@@ -18,6 +21,7 @@ interface IMailSendDTO {
   to: IMailContact;
   from?: IMailContact;
   subject: string;
+  body: string;
 }
 
 class UsuarioServiceResetSenha {
@@ -44,6 +48,14 @@ class UsuarioServiceResetSenha {
       throw new TratamentoDeErros('Nenhum registro foi alterado!', 400)
     }
 
+    const templateFile = fs.readFileSync(path.resolve(__dirname, '..', 'view','RecuperarSenha.hbs')).toString('utf8');
+
+    const templateString = Handlebars.compile(templateFile);
+
+    const variaveis = { "apelido" : encontrarID.apelido, "senha-temporaria": senha_temporaria}
+
+    const htmlBody = templateString(variaveis);
+
     const emailTo : IMailSendDTO =
     {
       to:
@@ -51,7 +63,8 @@ class UsuarioServiceResetSenha {
         name: encontrarID.apelido,
         email: encontrarID.email
       },
-      subject: `Recuperação de senha ${senha_temporaria}`
+      subject: `Recuperação de senha ${senha_temporaria}`,
+      body: htmlBody
     }
 
     const mailProvider = new EthrealMailProvider();
