@@ -1,13 +1,14 @@
 import { getCustomRepository } from "typeorm";
 import { Viajem } from '../entity/Viajem'
 
+import { format } from 'date-fns';
 import ViajemRepository from '../repositories/ViajemRepository';
 import TratamentoDeErros  from "../errors/TratamentoDeErros";
 
 interface Request {
   id: string;
   motivo_cancelamento: string;
-  situacao: 1 | 2;
+  situacao: 1 | 2 | 3;
 }
 
 class ViajemServiceCancelar {
@@ -34,9 +35,15 @@ class ViajemServiceCancelar {
       throw new TratamentoDeErros('Viajem já cancelada!', 404)
     }
 
+    const dataCadastro = format(new Date(), 'yy-mm-dddd')
+
     const linha = await repository.update(id, {
       situacao,
       motivo_cancelamento,
+      status: [{
+        data: dataCadastro,
+        status: 3
+      }]
     })
 
     if(!linha.affected) {

@@ -25,7 +25,7 @@ const errorHandler: ErrorRequestHandler = (error, request, response, next) => {
     })
   }
 
-  return response.status(500).json({ erro: true, mensagem: 'Já fomos reportados com este problema e já estamos trabalhando em uma solução, tente novamente mais tarde!'})
+  return response.status(500).json({ erro: true, message: 'Já fomos reportados com este problema e já estamos trabalhando em uma solução, tente novamente mais tarde!' + error})
 }
 
 export default errorHandler;

@@ -2,13 +2,11 @@ import { getCustomRepository } from "typeorm";
 import { Viajem } from '../entity/Viajem'
 
 import ViajemRepository from '../repositories/ViajemRepository';
-import TratamentoDeErros  from "../errors/TratamentoDeErros";
-
+import { formatISO } from 'date-fns';
 
 interface Request {
+  is_agendamento: boolean;
   data: Date;
-  situacao: number;
-  status_atual: number;
   latitude_de: string;
   longitude_de: string;
   endereco_de: string;
@@ -19,17 +17,13 @@ interface Request {
   tempo_estimado: string;
   valor: number;
   cliente: string;
-  status: {
-    data: Date;
-    status: number;
-  }
+  quantidade_passageiro: number;
 }
 
 class ViajemServiceCriar {
   public async execute({
     data,
-    situacao,
-    status_atual,
+    is_agendamento,
     latitude_de,
     longitude_de,
     endereco_de,
@@ -40,14 +34,22 @@ class ViajemServiceCriar {
     tempo_estimado,
     valor,
     cliente,
+    quantidade_passageiro,
   }: Request): Promise<Viajem> {
 
     const repository = getCustomRepository(ViajemRepository)
 
+    let dataViagem = formatISO(new Date());
+    if(is_agendamento && is_agendamento == true && data) {
+      dataViagem = formatISO(data);
+    }
+
+    const dataCadastro = formatISO(new Date());
+
     const registro = repository.create({
-      data,
-      situacao,
-      status_atual,
+      data: dataViagem,
+      situacao: 0,
+      status_atual: 1,
       latitude_de,
       longitude_de,
       endereco_de,
@@ -58,9 +60,10 @@ class ViajemServiceCriar {
       tempo_estimado,
       valor,
       cliente,
+      quantidade_passageiro,
       status: [{
-        data,
-        status: status_atual
+        data: dataCadastro,
+        status: 1
       }]
     })
 

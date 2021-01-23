@@ -13,7 +13,7 @@ export default class SessaoController {
 
     const usuarioView = UsuariosView.render(usuario);
 
-    return response.json({ usuarioView , token})
+    return response.json({ usuario: usuarioView , token})
 
   }
 }
