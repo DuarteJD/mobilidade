@@ -1,11 +1,12 @@
-import { getCustomRepository } from "typeorm";
+import { getCustomRepository, getRepository } from "typeorm";
 import { Viajem } from '../entity/Viajem'
+import { formatISO } from 'date-fns';
 
+import { ViajemStatus } from '../entity/ViajemStatus';
 import ViajemRepository from '../repositories/ViajemRepository';
 import TratamentoDeErros  from "../errors/TratamentoDeErros";
 
 interface Request {
-  id: string;
   situacao?: number;
   status_atual?: number;
   distancia_percorrida?: string;
@@ -18,18 +19,7 @@ interface Request {
 }
 
 class ViajemServiceAtualizar {
-  public async execute({
-    id,
-    situacao,
-    status_atual,
-    distancia_percorrida,
-    tempo_percorrido,
-    nota_motorista,
-    nota_cliente,
-    motorista,
-    veiculo,
-    motivo_cancelamento,
-  }: Request): Promise<Viajem> {
+  public async execute(id: string, data: Request): Promise<Viajem> {
 
     const repository = getCustomRepository(ViajemRepository)
 
@@ -39,20 +29,29 @@ class ViajemServiceAtualizar {
       throw new TratamentoDeErros('Viajem não encontrada!', 404)
     }
 
-    const linha = await repository.update(id, {
-      situacao,
-      status_atual,
-      distancia_percorrida,
-      tempo_percorrido,
-      nota_motorista,
-      nota_cliente,
-      motorista,
-      veiculo,
-      motivo_cancelamento,
-    })
+    let isMudouStatusAtual = false;
+    if(data.status_atual && data.status_atual !== encontrarID.status_atual)  {
+      isMudouStatusAtual = true
+    }
+
+    const linha = await repository.update(id, data);
 
     if(!linha.affected) {
       throw new TratamentoDeErros('Nenhum registro foi alterado!', 400)
+    }
+
+    if(isMudouStatusAtual) {
+      const dataCadastro = formatISO(new Date());
+
+      const statusViajemRepository = getRepository(ViajemStatus);
+
+      const registroStatus = statusViajemRepository.create({
+        viajem: encontrarID.id,
+        data: dataCadastro,
+        status: 1
+      })
+
+      await statusViajemRepository.save(registroStatus)
     }
 
     const registro = await repository.findOne(id)

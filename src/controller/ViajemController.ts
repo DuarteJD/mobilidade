@@ -1,6 +1,8 @@
 import { getCustomRepository } from "typeorm";
 import { Request, Response } from "express";
 
+import * as yup from "yup";
+
 import ViajemRepository from '../repositories/ViajemRepository';
 import ViajemServiceCriar from "../services/ViajemServiceCriar";
 import ViajemServiceCancelar from "../services/ViajemServiceCancelar";
@@ -14,7 +16,10 @@ export default class ViajemController {
     const numero_registros = !request.query.registros ? 20 : Number(request.query.registros)
     const repo = getCustomRepository(ViajemRepository)
 
-    const todos = tipo === 1 ? repo.buscarTodosDoCliente({id, pagina, numero_registros }) : repo.buscarTodosDoMotorista({id, pagina, numero_registros })
+    console.log(`id => ${id} pagina => ${pagina} numero_registros=> ${numero_registros}`)
+
+    const todos = tipo === 1 ? await repo.buscarTodosDoCliente({id, pagina, numero_registros }) : await repo.buscarTodosDoMotorista({id, pagina, numero_registros })
+
     return response.json(todos)
   }
 
@@ -27,6 +32,47 @@ export default class ViajemController {
 
   async save(request: Request, response: Response): Promise<Response> {
     const corpo = request.body
+
+    const schema = yup.object().shape({
+
+      latitude_de: yup
+      .string()
+      .required('Latitude do endereço de origem não informado'),
+
+      longitude_de: yup
+      .string()
+      .required('Longitude do endereço de origem não informado'),
+
+      endereco_de: yup
+      .string()
+      .required('Endereço de origem não informado'),
+
+      latitude_para: yup
+      .string()
+      .required('Latitude do endereço de destino não informado'),
+
+      longitude_para: yup
+      .string()
+      .required('Longitude do endereço de destino não informado'),
+
+      endereco_destino: yup
+      .string()
+      .required('Endereço de destino não informado'),
+
+      cliente: yup
+      .string()
+      .required('Cliente que solicitou a viajem não informado'),
+
+      quantidade_passageiro: yup
+      .number()
+      .required('Número de passageiros não informado!'),
+
+    });
+
+    await schema.validate(corpo, {
+      abortEarly: false,
+    });
+
     const service = new ViajemServiceCriar()
     const registro = await service.execute(corpo)
     return response.json(registro)
@@ -34,32 +80,48 @@ export default class ViajemController {
 
   async update(request: Request, response: Response): Promise<Response> {
     const { id } = request.params
-    const {
-      situacao,
-      status_atual,
-      distancia_percorrida,
-      tempo_percorrido,
-      nota_motorista,
-      nota_cliente,
-      motorista,
-      veiculo,
-      motivo_cancelamento,
-    } = request.body
-    const usuario = request.usuario.id
+    const corpo = request.body
+
+    const schema = yup.object().shape({
+
+      situacao: yup
+      .number(),
+
+      status_atual: yup
+      .number(),
+
+      latitude_de: yup
+      .string(),
+
+      longitude_de: yup
+      .string(),
+
+      endereco_de: yup
+      .string(),
+
+      latitude_para: yup
+      .string(),
+
+      longitude_para: yup
+      .string(),
+
+      endereco_destino: yup
+      .string(),
+
+      cliente: yup
+      .string(),
+
+      quantidade_passageiro: yup
+      .number(),
+
+    });
+
+    await schema.validate(corpo, {
+      abortEarly: false,
+    });
 
     const service = new ViajemServiceAtualizar()
-    const registro = await service.execute({
-      id,
-      situacao,
-      status_atual,
-      distancia_percorrida,
-      tempo_percorrido,
-      nota_motorista,
-      nota_cliente,
-      motorista,
-      veiculo,
-      motivo_cancelamento
-    })
+    const registro = await service.execute(id, corpo)
     return response.json(registro)
   }
 

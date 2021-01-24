@@ -49,7 +49,7 @@ class ViajemServiceCriar {
     const registro = repository.create({
       data: dataViagem,
       situacao: 0,
-      status_atual: 1,
+      status_atual: 0,
       latitude_de,
       longitude_de,
       endereco_de,
@@ -63,7 +63,7 @@ class ViajemServiceCriar {
       quantidade_passageiro,
       status: [{
         data: dataCadastro,
-        status: 1
+        status: 0
       }]
     })
 
